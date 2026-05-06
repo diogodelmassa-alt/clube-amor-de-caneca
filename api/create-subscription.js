@@ -1,5 +1,5 @@
 
-const MP_ACCESS_TOKEN = "APP_USR-2722760608661144-012615-2f003697562e8aeba165bdfc29829ee9-71192799";
+const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 
 export default async function handler(req, res) {
   // CORS Headers for Vercel
