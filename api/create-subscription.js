@@ -32,7 +32,8 @@ export default async function handler(req, res) {
 
     console.log(`Creating preference for ${reason} - R$ ${numericPrice}`);
 
-    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+        const origin = req.headers.origin || 'https://clubeamordecaneca.com.br';
+        const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
@@ -49,6 +50,11 @@ export default async function handler(req, res) {
         ],
         payer: {
           email: payer_email || 'cliente@amordecaneca.com.br',
+        },
+        back_urls: {
+          success: `${origin}/confirmacao.html.html`,
+          failure: `${origin}/`,
+          pending: `${origin}/`,
         },
         auto_return: 'approved',
         statement_descriptor: "AMOR DE CANECA",
