@@ -32,8 +32,10 @@ export default async function handler(req, res) {
 
     console.log(`Creating preference for ${reason} - R$ ${numericPrice}`);
 
-        const origin = req.headers.origin || 'https://clubeamordecaneca.com.br';
-        const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+    const origin = req.headers.origin || 'https://clubeamordecaneca.com.br';
+    const planSlug = reason.toLowerCase().split(' ')[0]; // Pega "classic", "premium" ou "vip"
+
+    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
@@ -52,7 +54,7 @@ export default async function handler(req, res) {
           email: payer_email || 'cliente@amordecaneca.com.br',
         },
         back_urls: {
-          success: `${origin}/confirmacao.html.html`,
+          success: `${origin}/confirmacao.html.html?plano=${planSlug}`,
           failure: `${origin}/`,
           pending: `${origin}/`,
         },
