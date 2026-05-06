@@ -1195,7 +1195,7 @@ footer {
             <li><div class="check">✓</div> Embalagem presente</li>
             <li><div class="check">✓</div> Acesso antecipado a coleções</li>
           </ul>
-          <a href="https://www.mercadopago.com.br/checkout/v1/subscription/redirect/f8e3743c-3175-4a23-8153-8173a4558545/payment-option-form/?preference-id=71192799-e7337b23-a9f1-483c-b5f8-f4364a2d9407&router-request-id=d01e80b1-1faa-42e5-bf67-01a2012c6ce4&p=897d4048a3aea788b9bedc3e3ce16b13" class="plan-btn btn-outline" style="display:block;text-align:center;text-decoration:none;">Assinar Classic</a>
+          <a href="javascript:void(0)" onclick="handleSubscribe('Classic', 39.90)" class="plan-btn btn-outline" style="display:block;text-align:center;text-decoration:none;">Assinar Classic</a>
         </div>
       </div>
 
@@ -1226,7 +1226,7 @@ footer {
             <li><div class="check">✓</div> Brinde surpresa trimestral</li>
             <li><div class="check">✓</div> Acesso ao app com clube exclusivo</li>
           </ul>
-          <a href="https://www.mercadopago.com.br/checkout/v1/subscription/redirect/ae66adcc-dc4e-43ea-bf5c-dc8b924847a8/payment-option-form/?preference-id=71192799-31a0dbe3-5ad5-479b-acad-05c99b0f77a4&router-request-id=011a6f33-2bc5-4197-8cab-c1bc8cad8ebf&p=897d4048a3aea788b9bedc3e3ce16b13" class="plan-btn btn-filled" style="display:block;text-align:center;text-decoration:none;">Assinar Premium ✨</a>
+          <a href="javascript:void(0)" onclick="handleSubscribe('Premium', 69.90)" class="plan-btn btn-filled" style="display:block;text-align:center;text-decoration:none;">Assinar Premium ✨</a>
         </div>
       </div>
 
@@ -1257,7 +1257,7 @@ footer {
             <li><div class="check">✓</div> Acesso VIP a lançamentos</li>
             <li><div class="check">✓</div> Suporte prioritário no app</li>
           </ul>
-          <a href="https://www.mercadopago.com.br/checkout/v1/subscription/redirect/d7a56afc-996a-4536-b677-9c7b17426405/payment-option-form/?preference-id=71192799-c90be95d-1d96-4cbe-ab90-e2b07eb028f4&router-request-id=d2d36127-7330-400c-aa6d-0aa814570b12&p=897d4048a3aea788b9bedc3e3ce16b13" class="plan-btn btn-dark" style="display:block;text-align:center;text-decoration:none;">Assinar VIP 👑</a>
+          <a href="javascript:void(0)" onclick="handleSubscribe('VIP', 99.90)" class="plan-btn btn-dark" style="display:block;text-align:center;text-decoration:none;">Assinar VIP 👑</a>
         </div>
       </div>
 
@@ -1551,6 +1551,46 @@ function toggleFaq(btn){
   const item = btn.parentElement;
   document.querySelectorAll('.faq-item.open').forEach(el=>{ if(el!==item) el.classList.remove('open'); });
   item.classList.toggle('open');
+}
+
+/* ─── MERCADO PAGO ─── */
+async function handleSubscribe(planName, planPrice) {
+  const btn = event.currentTarget;
+  const originalText = btn.innerText;
+  
+  try {
+    btn.innerText = "Carregando...";
+    btn.style.pointerEvents = "none";
+    btn.style.opacity = "0.7";
+
+    const response = await fetch('/api/create-subscription', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        reason: planName,
+        price: planPrice
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.init_point) {
+      window.location.href = data.init_point;
+    } else {
+      alert("Erro ao gerar link de pagamento: " + (data.error || "Desconhecido"));
+      btn.innerText = originalText;
+      btn.style.pointerEvents = "auto";
+      btn.style.opacity = "1";
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Erro de conexão. Verifique sua internet.");
+    btn.innerText = originalText;
+    btn.style.pointerEvents = "auto";
+    btn.style.opacity = "1";
+  }
 }
 </script>
 </body>
